@@ -1,0 +1,122 @@
+name: PFKeycards
+version: '1.0-SNAPSHOT'
+main: io.github.hyscript7.projectfusion.keycards.Keycards
+api-version: '1.20'
+prefix: PFKeycards
+authors: [ HyScript7 ]
+description: The custom plugin for handling keycards and locked doors in Project Fusion
+permissions:
+  # User Permissions
+  projectfusion.keycards.use:
+    description: "Allows the player to use keycards."
+    default: true
+  # Admin Permissions
+  projectfusion.keycards.admin:
+    description: "Gives access to all admin-level keycard and door management commands."
+    default: op
+    children:
+      projectfusion.keycards.admin.create: true
+      projectfusion.keycards.admin.delete: true
+      projectfusion.keycards.admin.modify: true
+      projectfusion.keycards.admin.list: true
+      projectfusion.keycards.admin.invalidate: true
+      projectfusion.keycards.admin.viewstatus: true
+      projectfusion.keycards.admin.createdoor: true
+      projectfusion.keycards.admin.deletedoor: true
+      projectfusion.keycards.admin.modifydoor: true
+      projectfusion.keycards.admin.listdoor: true
+      projectfusion.keycards.admin.bypass: true
+  projectfusion.keycards.admin.create:
+    description: "Allows the player to create keycards."
+    default: op
+  projectfusion.keycards.admin.delete:
+    description: "Allows the player to delete keycards."
+    default: op
+  projectfusion.keycards.admin.modify:
+    description: "Allows the player to modify keycards."
+    default: op
+  projectfusion.keycards.admin.list:
+    description: "Allows the player to list all keycards."
+    default: op
+  projectfusion.keycards.admin.invalidate:
+    description: "Allows the player to invalidate all keycards."
+    default: op
+  projectfusion.keycards.admin.viewstatus:
+    description: "Allows the player to view keycard validation status."
+    default: op
+  projectfusion.keycards.admin.createdoor:
+    description: "Allows the player to create doors or readers."
+    default: op
+  projectfusion.keycards.admin.deletedoor:
+    description: "Allows the player to delete doors or readers."
+    default: op
+  projectfusion.keycards.admin.modifydoor:
+    description: "Allows the player to modify doors or readers."
+    default: op
+  projectfusion.keycards.admin.listdoor:
+    description: "Allows the player to list all doors or readers."
+    default: op
+  projectfusion.keycards.admin.bypass:
+    description: "Allows the player to toggle keycard bypass."
+    default: op
+commands:
+  keycard:
+    description: "Base command for keycard operations."
+    aliases: [kc]
+    permission: projectfusion.keycards.use
+    usage: "/<command> <subcommand> [arguments]"
+  keycardcreate:
+    description: "Creates a new keycard."
+    aliases: [kccreate]
+    permission: projectfusion.keycards.admin.create
+    usage: "/<command> <keycardName>"
+  keycarddelete:
+    description: "Deletes an existing keycard."
+    aliases: [kcdelete]
+    permission: projectfusion.keycards.admin.delete
+    usage: "/<command> <keycardName>"
+  keycardmodify:
+    description: "Modifies an existing keycard."
+    aliases: [kcmodify]
+    permission: projectfusion.keycards.admin.modify
+    usage: "/<command> <keycardName> <property> <value>"
+  keycardlist:
+    description: "Lists all keycards."
+    aliases: [kclist]
+    permission: projectfusion.keycards.admin.list
+    usage: "/<command>"
+  keycardinvalidate:
+    description: "Invalidates all keycards."
+    aliases: [kcinvalidate]
+    permission: projectfusion.keycards.admin.invalidate
+    usage: "/<command>"
+  keycardstatus:
+    description: "Views the validation status of a keycard."
+    aliases: [kcstatus]
+    permission: projectfusion.keycards.admin.viewstatus
+    usage: "/<command> <keycardName>"
+  doorcreate:
+    description: "Creates a new door or reader."
+    aliases: [dcreate]
+    permission: projectfusion.keycards.admin.createdoor
+    usage: "/<command> <doorName>"
+  doordelete:
+    description: "Deletes an existing door or reader."
+    aliases: [ddelete]
+    permission: projectfusion.keycards.admin.deletedoor
+    usage: "/<command> <doorName>"
+  doormodify:
+    description: "Modifies an existing door or reader."
+    aliases: [dmodify]
+    permission: projectfusion.keycards.admin.modifydoor
+    usage: "/<command> <doorName> <property> <value>"
+  doorlist:
+    description: "Lists all doors or readers."
+    aliases: [dlist]
+    permission: projectfusion.keycards.admin.listdoor
+    usage: "/<command>"
+  bypass:
+    description: "Toggles keycard bypass mode."
+    aliases: [kcbypass]
+    permission: projectfusion.keycards.admin.bypass
+    usage: "/<command>"
