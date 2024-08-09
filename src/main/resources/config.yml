@@ -1,13 +1,3 @@
 # DO NOT TOUCH THIS - this value is used by the plugin to automatically migrate to new configuration formats
 # Changing it might break the plugin or delete your data stored within the plugin.
-version: 1.0
-
-# Whether we should verify permissions to use keycard doors.
-require-use-permission: true
-
-# - INTERNAL DATA -
-keycards: []
-keycards-ai: 0
-doors: []
-doors-ai: 0
-validity-class: 0
+version: 2.0
