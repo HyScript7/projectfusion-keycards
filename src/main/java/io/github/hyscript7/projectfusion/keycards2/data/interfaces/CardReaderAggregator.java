@@ -1,5 +1,6 @@
 package io.github.hyscript7.projectfusion.keycards2.data.interfaces;
 
+import io.github.hyscript7.projectfusion.keycards2.items.interfaces.CardReaderItem;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
  * We can fetch doors based on various identifiers, such as an ID, a block position, access level, world, etc...
  */
 public interface CardReaderAggregator {
-    void create(CardReader cardReader);
+    void create(CardReaderItem cardReaderItem);
     void delete(CardReader cardReader);
     @Nullable CardReader fromLocation(Location location);
     @Nullable CardReader fromBlock(Block block);

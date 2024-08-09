@@ -13,4 +13,8 @@ public interface CardReader {
     Block getBlock();
     long getDuration();
     boolean getRequiresExactMatch();
+
+    void setAccessLevel(int accessLevel);
+    void setDuration(long duration);
+    void setRequiresExactMatch(boolean requiresExactMatch);
 }

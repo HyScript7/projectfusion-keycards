@@ -15,4 +15,9 @@ public interface KeyCard {
     Component getName();
     List<Component> lore();
     int getCustomModelData();
+
+    void setAccessLevel(int accessLevel);
+    void setName(Component name);
+    void setLore(List<Component> lore);
+    void setCustomModelData(int customModelData);
 }
