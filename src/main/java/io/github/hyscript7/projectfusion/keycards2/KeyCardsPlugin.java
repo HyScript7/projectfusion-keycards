@@ -3,7 +3,6 @@ package io.github.hyscript7.projectfusion.keycards2;
 import io.github.hyscript7.projectfusion.keycards2.config.interfaces.Config;
 import io.github.hyscript7.projectfusion.keycards2.data.impl.CardReaderImpl;
 import io.github.hyscript7.projectfusion.keycards2.data.impl.KeyCardImpl;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 

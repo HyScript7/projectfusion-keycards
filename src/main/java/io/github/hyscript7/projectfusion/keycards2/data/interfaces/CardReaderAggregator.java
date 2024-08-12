@@ -10,7 +10,8 @@ import org.jetbrains.annotations.Nullable;
  * We can fetch doors based on various identifiers, such as an ID, a block position, access level, world, etc...
  */
 public interface CardReaderAggregator {
-    void create(CardReaderItem cardReaderItem);
+    void create(CardReaderItem cardReaderItem, Block block);
+    void create(CardReaderItem cardReaderItem, Location location);
     void delete(CardReader cardReader);
     @Nullable CardReader fromLocation(Location location);
     @Nullable CardReader fromBlock(Block block);
