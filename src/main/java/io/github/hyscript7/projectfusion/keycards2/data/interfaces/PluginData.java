@@ -13,4 +13,6 @@ public interface PluginData {
     void load();
     List<KeyCard> getKeyCards();
     List<CardReader> getCardReaders();
+    KeyCardAggregator getKeyCardAggregator();
+    CardReaderAggregator getCardReaderAggregator();
 }

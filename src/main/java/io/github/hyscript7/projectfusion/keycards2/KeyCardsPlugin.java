@@ -1,5 +1,6 @@
 package io.github.hyscript7.projectfusion.keycards2;
 
+import io.github.hyscript7.projectfusion.keycards2.config.impl.ConfigImpl;
 import io.github.hyscript7.projectfusion.keycards2.config.interfaces.Config;
 import io.github.hyscript7.projectfusion.keycards2.data.impl.CardReaderImpl;
 import io.github.hyscript7.projectfusion.keycards2.data.impl.KeyCardImpl;
@@ -15,7 +16,11 @@ public class KeyCardsPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(CardReaderImpl.class);
         // Create default config if it doesn't exist yet
         saveResource("config.yml", false);
-        // TODO: Register custom listeners
+        // Create singleton config
+        config = new ConfigImpl(this);
+        // Load config
+        config.load();
+        // Register listeners
     }
 
     @Override
