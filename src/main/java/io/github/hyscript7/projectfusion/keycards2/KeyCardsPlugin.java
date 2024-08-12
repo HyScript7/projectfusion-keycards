@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class KeyCardsPlugin extends JavaPlugin {
     private Config config;
+
     @Override
     public void onEnable() {
         // Register custom serializable classes
@@ -25,5 +26,9 @@ public class KeyCardsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+    }
+
+    public Config getKeyCardsConfig() {
+        return config;
     }
 }
