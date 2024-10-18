@@ -13,6 +13,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class KeycardAggregatorImpl implements KeyCardAggregator {
@@ -23,9 +24,13 @@ public class KeycardAggregatorImpl implements KeyCardAggregator {
         this.pluginData = pluginData;
     }
 
+    private int nextId() {
+        return pluginData.getKeyCards().stream().map(KeyCard::getId).max(Integer::compareTo).orElse(0) + 1;
+    }
+
     @Override
     public void create(int accessLevel, Component name, List<Component> lore, int customModelData) {
-        int keyCardId = 0; // TODO: Implement
+        int keyCardId = nextId();
         KeyCard keyCard = new KeyCardImpl(keyCardId, accessLevel, name, lore, customModelData);
         pluginData.getKeyCards().add(keyCard);
     }

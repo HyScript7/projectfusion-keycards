@@ -2,6 +2,7 @@ package io.github.hyscript7.projectfusion.keycards2.data.impl;
 
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.CardReader;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.CardReaderAggregator;
+import io.github.hyscript7.projectfusion.keycards2.data.interfaces.KeyCard;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.PluginData;
 import io.github.hyscript7.projectfusion.keycards2.items.interfaces.CardReaderItem;
 import org.bukkit.Location;
@@ -15,6 +16,10 @@ public class CardReaderAggregatorImpl implements CardReaderAggregator {
         this.pluginData = pluginData;
     }
 
+    private int nextId() {
+        return pluginData.getCardReaders().stream().map(CardReader::getId).max(Integer::compareTo).orElse(0) + 1;
+    }
+
     @Override
     public void create(CardReaderItem cardReaderItem, Block block) {
         create(cardReaderItem, block.getLocation());
@@ -22,7 +27,7 @@ public class CardReaderAggregatorImpl implements CardReaderAggregator {
 
     @Override
     public void create(CardReaderItem cardReaderItem, Location location) {
-        int cardReaderId = 0; // TODO: Implement
+        int cardReaderId = nextId();
         CardReader cardReader = new CardReaderImpl(
                 cardReaderId,
                 cardReaderItem.getLevel(),
