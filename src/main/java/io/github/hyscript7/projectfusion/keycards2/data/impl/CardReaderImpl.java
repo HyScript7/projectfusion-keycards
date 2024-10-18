@@ -86,7 +86,7 @@ public class CardReaderImpl implements CardReader, ConfigurationSerializable {
                 (int) map.get("id"),
                 (int) map.get("accessLevel"),
                 (Location) map.get("location"),
-                (long) map.get("duration"),
+                Long.parseLong(String.valueOf(map.get("duration"))),
                 (boolean) map.get("requiresExactMatch")
         );
     }

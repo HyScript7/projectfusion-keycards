@@ -36,8 +36,8 @@ public class CardReaderCreateListener implements Listener {
     public void blockRightClickedListener(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
         ItemStack usedTool = event.getItem();
-        if (clickedBlock == null) {
-            // This event handles the creation of card readers, which can only happen on blocks that exist.
+        if (clickedBlock == null || usedTool == null) {
+            // This event handles the creation of card readers, which can only happen on blocks that exist and we click it with a CardReader item tool.
             return;
         }
         // TODO: Check whether the clicked block can be made into a card reader. For now we only handle iron doors.

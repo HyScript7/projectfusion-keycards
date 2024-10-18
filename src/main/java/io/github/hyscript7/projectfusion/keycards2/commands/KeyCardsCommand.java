@@ -2,6 +2,8 @@ package io.github.hyscript7.projectfusion.keycards2.commands;
 
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.KeyCard;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.KeyCardAggregator;
+import io.github.hyscript7.projectfusion.keycards2.items.impl.CardReaderItemImpl;
+import io.github.hyscript7.projectfusion.keycards2.items.interfaces.CardReaderItemFactory;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -34,6 +36,7 @@ public class KeyCardsCommand implements CommandExecutor {
                 case "give" -> false;
                 case "list" -> false;
                 case "remove" -> false;
+                case "door" -> giveDoorTool(p, args);
                 default -> invalidCommand(p);
             };
         }
@@ -93,6 +96,30 @@ public class KeyCardsCommand implements CommandExecutor {
             return false;
         }
         ItemStack itemStack = keyCardAggregator.getItem(keyCard);
+        senderPlayer.getInventory().addItem(itemStack);
+        // TODO: Send success message to user
+        return true;
+    }
+
+    private boolean giveDoorTool(Player senderPlayer, String[] args) {
+        if (args.length < 4) {
+            // TODO: Send error to user (bad params)
+            return false;
+        }
+        String levelString = args[1];
+        String durationString = args[2];
+        String matchExactlyString = args[3];
+        int level;
+        long duration;
+        try {
+            level = Integer.parseInt(levelString);
+            duration = Long.parseLong(durationString);
+        } catch (NumberFormatException e) {
+            // TODO: Send error to user (bad number format)
+            return false;
+        }
+        boolean match = matchExactlyString.equalsIgnoreCase("true");
+        ItemStack itemStack = new CardReaderItemImpl(level, duration, match).asItemStack();
         senderPlayer.getInventory().addItem(itemStack);
         // TODO: Send success message to user
         return true;

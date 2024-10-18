@@ -19,9 +19,9 @@ public class CardReaderItemFactoryImpl implements CardReaderItemFactory {
         PersistentDataContainer persistentDataContainer = itemStack.getItemMeta().getPersistentDataContainer();
         if (!persistentDataContainer.has(CardReaderItemImpl.LEVEL_KEY, PersistentDataType.INTEGER))
             return null;
-        if (!persistentDataContainer.has(CardReaderItemImpl.DURATION_KEY, PersistentDataType.INTEGER))
+        if (!persistentDataContainer.has(CardReaderItemImpl.DURATION_KEY, PersistentDataType.LONG))
             return null;
-        if (!persistentDataContainer.has(CardReaderItemImpl.REQUIRES_EXACT_MATCH_KEY, PersistentDataType.INTEGER))
+        if (!persistentDataContainer.has(CardReaderItemImpl.REQUIRES_EXACT_MATCH_KEY, PersistentDataType.BOOLEAN))
             return null;
         int level;
         long duration;

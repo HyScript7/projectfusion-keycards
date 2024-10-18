@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class KeycardAggregatorImpl implements KeyCardAggregator {
     private static final NamespacedKey KEY_CARD_ID_KEY = new NamespacedKey(KeyCardsPlugin.getPlugin(KeyCardsPlugin.class), "key_card_id");
@@ -57,6 +58,9 @@ public class KeycardAggregatorImpl implements KeyCardAggregator {
 
     @Override
     public @Nullable KeyCard fromItem(ItemStack itemStack) {
+        if (Objects.isNull(itemStack)) {
+            return null;
+        }
         if (!itemStack.getType().equals(Material.WRITTEN_BOOK)) {
             return null;
         }

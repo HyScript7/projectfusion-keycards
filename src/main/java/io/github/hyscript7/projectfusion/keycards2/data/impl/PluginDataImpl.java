@@ -23,7 +23,9 @@ public class PluginDataImpl implements PluginData {
 
     @Override
     public void save() {
-        config.save();
+        config.getConfig().set("keycards", keyCards);
+        config.getConfig().set("cardreaders", cardReaders);
+        // config.save();
     }
 
     @Override

@@ -2,11 +2,12 @@ package io.github.hyscript7.projectfusion.keycards2.data.interfaces;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 /*
  * This interface describes operations possible on a CardReader object in stored Plugin Data.
  */
-public interface CardReader {
+public interface CardReader extends ConfigurationSerializable {
     int getId();
     int getAccessLevel();
     Location getLocation();

@@ -1,8 +1,10 @@
 package io.github.hyscript7.projectfusion.keycards2.data.impl;
 
+import io.github.hyscript7.projectfusion.keycards2.KeyCardsPlugin;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.KeyCard;
 import net.kyori.adventure.text.Component;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -70,22 +72,32 @@ public class KeyCardImpl implements KeyCard, ConfigurationSerializable {
 
     @Override
     public @NotNull Map<String, Object> serialize() {
+        ItemStack itemStack = KeyCardsPlugin.getPlugin(KeyCardsPlugin.class).getKeyCardsConfig().getPluginData().getKeyCardAggregator().getItem(this);
         return Map.of(
                 "id", id,
                 "accessLevel", accessLevel,
-                "name", name,
-                "lore", lore,
+                "itemstack", itemStack
+                /*
+                "name", name.toString(),
+                "lore", lore.stream().map(Component::toString).toList(),
                 "customModelData", customModelData
+                 */
         );
     }
 
     public static KeyCard deserialize(Map<String, Object> map) {
+        ItemStack itemStack = (ItemStack) map.get("itemstack");
         return new KeyCardImpl(
                 (int) map.get("id"),
                 (int) map.get("accessLevel"),
+                itemStack.getItemMeta().displayName(),
+                itemStack.getItemMeta().lore(),
+                itemStack.getItemMeta().hasCustomModelData() ? itemStack.getItemMeta().getCustomModelData() : 0
+                /*
                 (Component) map.get("name"),
                 (List<Component>) map.get("lore"),
                 (int) map.get("customModelData")
+                 */
         );
     }
 }
