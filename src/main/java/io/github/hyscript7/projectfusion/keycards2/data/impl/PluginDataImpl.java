@@ -3,14 +3,15 @@ package io.github.hyscript7.projectfusion.keycards2.data.impl;
 import io.github.hyscript7.projectfusion.keycards2.config.interfaces.Config;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PluginDataImpl implements PluginData {
     private final Config config;
     private final KeyCardAggregator keycardAggregator;
     private final CardReaderAggregator cardReaderAggregator;
-    private final List<KeyCard> keyCards;
-    private final List<CardReader> cardReaders;
+    private List<KeyCard> keyCards;
+    private List<CardReader> cardReaders;
 
     public PluginDataImpl(Config config) {
         this.config = config;
@@ -27,7 +28,8 @@ public class PluginDataImpl implements PluginData {
 
     @Override
     public void load() {
-        config.load();
+        this.keyCards = (List<KeyCard>) config.getConfig().getList("keycards", new ArrayList<>());
+        this.cardReaders = (List<CardReader>) config.getConfig().getList("cardreaders", new ArrayList<>());
     }
 
     @Override

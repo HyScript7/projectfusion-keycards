@@ -19,14 +19,14 @@ public class ConfigImpl implements Config {
 
     @Override
     public void save() {
+        fileConfiguration.set("keycards", pluginData.getKeyCards());
+        fileConfiguration.set("cardreaders", pluginData.getCardReaders());
         plugin.saveConfig();
     }
 
     @Override
     public void load() {
-        fileConfiguration.set("keycards", pluginData.getKeyCards());
-        fileConfiguration.set("cardreaders", pluginData.getCardReaders());
-        plugin.saveConfig();
+        pluginData.load();
     }
 
     @Override
