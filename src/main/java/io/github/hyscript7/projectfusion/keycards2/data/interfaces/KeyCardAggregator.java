@@ -15,4 +15,5 @@ public interface KeyCardAggregator {
     void delete(KeyCard keyCard);
     ItemStack getItem(KeyCard keyCard);
     @Nullable KeyCard fromItem(ItemStack itemStack);
+    @Nullable KeyCard fromId(int id);
 }

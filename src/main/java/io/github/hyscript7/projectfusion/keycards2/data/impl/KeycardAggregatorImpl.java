@@ -63,4 +63,9 @@ public class KeycardAggregatorImpl implements KeyCardAggregator {
         int keyCardId = persistentDataContainer.get(KEY_CARD_ID_KEY, PersistentDataType.INTEGER);
         return pluginData.getKeyCards().stream().filter(k -> k.getId() == keyCardId).findFirst().orElse(null);
     }
+
+    @Override
+    public @Nullable KeyCard fromId(int id) {
+        return pluginData.getKeyCards().stream().filter(keyCard -> keyCard.getId() == id).findFirst().orElse(null);
+    }
 }
