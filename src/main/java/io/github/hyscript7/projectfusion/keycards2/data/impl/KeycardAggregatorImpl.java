@@ -40,12 +40,12 @@ public class KeycardAggregatorImpl implements KeyCardAggregator {
         ItemStack itemStack = new ItemStack(Material.WRITTEN_BOOK);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.displayName(keyCard.getName());
-        itemMeta.lore(keyCard.lore());
+        itemMeta.lore(keyCard.getLore());
 
         PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
         persistentDataContainer.set(KEY_CARD_ID_KEY, PersistentDataType.INTEGER, keyCard.getId());
 
-        itemStack.lore(keyCard.lore()); // Might be redundant
+        itemStack.lore(keyCard.getLore()); // Might be redundant
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }

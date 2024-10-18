@@ -39,7 +39,7 @@ public class KeyCardImpl implements KeyCard, ConfigurationSerializable {
     }
 
     @Override
-    public List<Component> lore() {
+    public List<Component> getLore() {
         return lore;
     }
 

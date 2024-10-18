@@ -1,7 +1,6 @@
 package io.github.hyscript7.projectfusion.keycards2.data.interfaces;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ public interface KeyCard {
     int getAccessLevel();
     // Keycard Meta Data
     Component getName();
-    List<Component> lore();
+    List<Component> getLore();
     int getCustomModelData();
 
     void setAccessLevel(int accessLevel);
