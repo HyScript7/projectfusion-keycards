@@ -6,6 +6,8 @@ import io.github.hyscript7.projectfusion.keycards2.data.impl.PluginDataImpl;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.PluginData;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.ArrayList;
+
 public class ConfigImpl implements Config {
     private final KeyCardsPlugin plugin;
     private final FileConfiguration fileConfiguration;

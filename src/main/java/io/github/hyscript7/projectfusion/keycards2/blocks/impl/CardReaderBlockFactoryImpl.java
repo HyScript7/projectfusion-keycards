@@ -11,7 +11,11 @@ import org.jetbrains.annotations.Nullable;
 public class CardReaderBlockFactoryImpl implements CardReaderBlockFactory {
     @Override
     public @Nullable CardReaderBlock fromLocation(Location location) {
-        return fromCardReader(KeyCardsPlugin.getPlugin(KeyCardsPlugin.class).getKeyCardsConfig().getPluginData().getCardReaderAggregator().fromLocation(location));
+        @Nullable CardReader cardReader = KeyCardsPlugin.getPlugin(KeyCardsPlugin.class).getKeyCardsConfig().getPluginData().getCardReaderAggregator().fromLocation(location);
+        if (cardReader == null) {
+            return null;
+        }
+        return fromCardReader(cardReader);
     }
 
     @Override
