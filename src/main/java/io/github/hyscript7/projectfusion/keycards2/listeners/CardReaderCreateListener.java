@@ -1,30 +1,26 @@
 package io.github.hyscript7.projectfusion.keycards2.listeners;
 
 import io.github.hyscript7.projectfusion.keycards2.KeyCardsPlugin;
-import io.github.hyscript7.projectfusion.keycards2.blocks.interfaces.CardReaderBlock;
 import io.github.hyscript7.projectfusion.keycards2.blocks.interfaces.CardReaderBlockFactory;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.CardReaderAggregator;
-import io.github.hyscript7.projectfusion.keycards2.data.interfaces.KeyCardAggregator;
 import io.github.hyscript7.projectfusion.keycards2.items.interfaces.CardReaderItem;
 import io.github.hyscript7.projectfusion.keycards2.items.interfaces.CardReaderItemFactory;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.logging.Logger;
 
-public class CardReaderPlaceListener implements Listener {
+public class CardReaderCreateListener implements Listener {
     private final Logger logger;
     private final CardReaderAggregator cardReaderAggregator;
     private final CardReaderItemFactory cardReaderItemFactory;
     private final CardReaderBlockFactory cardReaderBlockFactory;
 
-    public CardReaderPlaceListener(CardReaderAggregator cardReaderAggregator, CardReaderItemFactory cardReaderItemFactory, CardReaderBlockFactory cardReaderBlockFactory) {
+    public CardReaderCreateListener(CardReaderAggregator cardReaderAggregator, CardReaderItemFactory cardReaderItemFactory, CardReaderBlockFactory cardReaderBlockFactory) {
         this.logger = KeyCardsPlugin.getPlugin(KeyCardsPlugin.class).getLogger();
         this.cardReaderAggregator = cardReaderAggregator;
         this.cardReaderItemFactory = cardReaderItemFactory;
