@@ -2,6 +2,7 @@ package io.github.hyscript7.projectfusion.keycards2;
 
 import io.github.hyscript7.projectfusion.keycards2.blocks.impl.CardReaderBlockFactoryImpl;
 import io.github.hyscript7.projectfusion.keycards2.blocks.interfaces.CardReaderBlockFactory;
+import io.github.hyscript7.projectfusion.keycards2.commands.KeyCardsCommand;
 import io.github.hyscript7.projectfusion.keycards2.config.impl.ConfigImpl;
 import io.github.hyscript7.projectfusion.keycards2.config.interfaces.Config;
 import io.github.hyscript7.projectfusion.keycards2.data.impl.CardReaderImpl;
@@ -14,6 +15,8 @@ import io.github.hyscript7.projectfusion.keycards2.listeners.CardReaderInteractL
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Objects;
 
 public class KeyCardsPlugin extends JavaPlugin {
     private Config config;
@@ -33,6 +36,7 @@ public class KeyCardsPlugin extends JavaPlugin {
         CardReaderItemFactory cardReaderItemFactory = new CardReaderItemFactoryImpl();
         CardReaderBlockFactory cardReaderBlockFactory = new CardReaderBlockFactoryImpl();
         // Register commands
+        Objects.requireNonNull(getCommand("keycards")).setExecutor(new KeyCardsCommand(config.getPluginData().getKeyCardAggregator()));
         // Register listeners
         getServer().getPluginManager().registerEvents(new CardReaderCreateListener(config.getPluginData().getCardReaderAggregator(), cardReaderItemFactory, cardReaderBlockFactory), this);
         getServer().getPluginManager().registerEvents(new CardReaderDestroyListener(config.getPluginData().getCardReaderAggregator(), cardReaderBlockFactory), this);

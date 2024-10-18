@@ -5,3 +5,8 @@ api-version: '1.20'
 prefix: PFKeycards
 authors: [ HyScript7 ]
 description: The custom plugin for handling keycards and locked doors in Project Fusion
+commands:
+  keycards:
+    description: Main command for working with keycards
+    usage: /keycards <add|get|give|list|remove> [params...]
+
