@@ -45,6 +45,10 @@ public class CardReaderInteractListener implements Listener {
 
     @EventHandler
     public void cardReaderClicked(PlayerInteractEvent event) {
+        if (event.getAction().isLeftClick()) {
+            // wtf? lala
+            return;
+        }
         Block clickedBlock = event.getClickedBlock();
         if (clickedBlock == null) {
             // This event handles interactions with card readers, which can only happen on a block that exists.
@@ -71,6 +75,7 @@ public class CardReaderInteractListener implements Listener {
         if (cardReader.getRequiresExactMatch()) {
             if (cardReader.getAccessLevel() == keyCard.getAccessLevel()) {
                 cardReaderBlock.open();
+                event.setCancelled(true);
             } else {
                 // TODO: Send an error message to the player
                 logger.info("When handling interact event in CardReaderInteractListener: CardReader requires exact level match, but player keycard has a different level!");
@@ -78,6 +83,7 @@ public class CardReaderInteractListener implements Listener {
         } else {
             if (cardReader.getAccessLevel() <= keyCard.getAccessLevel()) {
                 cardReaderBlock.open();
+                event.setCancelled(true);
             } else {
                 // TODO: Send an error message to the player
                 logger.info("When handling interact event in CardReaderInteractListener: CardReader requires level " + cardReader.getAccessLevel() + " but player keycard only has level " + keyCard.getAccessLevel() + "! (Expecting player level to be lower than card reader level)");

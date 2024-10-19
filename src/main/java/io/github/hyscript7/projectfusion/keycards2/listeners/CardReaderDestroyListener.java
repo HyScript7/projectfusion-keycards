@@ -5,6 +5,9 @@ import io.github.hyscript7.projectfusion.keycards2.blocks.interfaces.CardReaderB
 import io.github.hyscript7.projectfusion.keycards2.blocks.interfaces.CardReaderBlockFactory;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.CardReader;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.CardReaderAggregator;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -24,7 +27,11 @@ public class CardReaderDestroyListener implements Listener {
 
     @EventHandler
     public void cardReaderBlockDestroyedListener(BlockBreakEvent event) {
-        CardReaderBlock cardReaderBlock = cardReaderBlockFactory.fromBlock(event.getBlock());
+        deleteCardReaderIfExistsAt(event.getBlock(), 0);
+    }
+
+    private void deleteCardReaderIfExistsAt(Block block, int depth) {
+        CardReaderBlock cardReaderBlock = cardReaderBlockFactory.fromBlock(block);
         if (cardReaderBlock == null) {
             logger.info("When handling interact event in CardReaderDestroyListener: Broken block is not a card reader, ignoring!");
             return;
@@ -35,7 +42,14 @@ public class CardReaderDestroyListener implements Listener {
             return;
         }
         cardReaderAggregator.delete(cardReader);
-        // TODO: Check whether we need to delete the reader of surrounding blocks in the case the card reader was an iron door.
+        // If this is an iron door, delete the other half as well.
+        if (block.getBlockData().getMaterial().equals(Material.IRON_DOOR) && depth < 2) {
+            // Someone is going to find a way to crash the server with this.
+            Block above = block.getRelative(BlockFace.UP);
+            deleteCardReaderIfExistsAt(above, depth+1);
+            Block below = block.getRelative(BlockFace.DOWN);
+            deleteCardReaderIfExistsAt(below, depth+1);
+        }
         logger.info("When handling interact event in CardReaderDestroyListener: Card Reader deleted as the block was broken!");
         // TODO: Send message to player
     }
