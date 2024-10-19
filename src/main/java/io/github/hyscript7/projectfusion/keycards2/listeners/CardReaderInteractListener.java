@@ -9,6 +9,7 @@ import io.github.hyscript7.projectfusion.keycards2.data.interfaces.KeyCard;
 import io.github.hyscript7.projectfusion.keycards2.data.interfaces.KeyCardAggregator;
 import io.github.hyscript7.projectfusion.keycards2.items.interfaces.CardReaderItemFactory;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -70,6 +71,16 @@ public class CardReaderInteractListener implements Listener {
             // TODO: Send an error message to the player
             logger.info("When handling interact event in CardReaderInteractListener: Player has no KeyCard in their inventory.");
             return;
+        }
+        // This will not open the door if the player is sneaking and not holding a KeyCard, additionally, if we are in creative mode, we get information about the door.
+        if (event.getPlayer().isSneaking()) {
+            if (! (Objects.nonNull(keyCardAggregator.fromItem(event.getPlayer().getInventory().getItemInMainHand()))
+                            || Objects.nonNull(keyCardAggregator.fromItem(event.getPlayer().getInventory().getItemInOffHand())))) {
+                if (event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+                    // TODO: Send the door level and other information to the player
+                }
+                return;
+            }
         }
         // Check level and open door if levels match or is high enough
         if (cardReader.getRequiresExactMatch()) {
