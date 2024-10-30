@@ -6,7 +6,7 @@
   </a>
 </p>
 
-> An implementation of Project Fusion keycards in PaperMC 1.20.5
+> An implementation of Project Fusion keycards in PaperMC 1.20.1
 
 ## Install
 
