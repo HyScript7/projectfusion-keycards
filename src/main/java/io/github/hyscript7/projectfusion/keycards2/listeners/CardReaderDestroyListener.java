@@ -41,6 +41,7 @@ public class CardReaderDestroyListener implements Listener {
             logger.info("When handling interact event in CardReaderDestroyListener: What the fuck?");
             return;
         }
+        // TODO: There is a destroy method in CardReaderBlock, move this logic there
         cardReaderAggregator.delete(cardReader);
         // If this is an iron door, delete the other half as well.
         if (block.getBlockData().getMaterial().equals(Material.IRON_DOOR) && depth < 2) {
