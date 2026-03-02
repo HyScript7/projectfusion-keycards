@@ -1,0 +1,4 @@
+name: ProjectFusion-Keycards
+version: '1.0-SNAPSHOT'
+main: io.github.hyscrip7.projectfusion.keycards.ProjectFusionKeycards
+api-version: '1.21.11'
