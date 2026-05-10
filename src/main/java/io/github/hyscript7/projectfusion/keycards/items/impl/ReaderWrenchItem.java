@@ -1,5 +1,6 @@
 package io.github.hyscript7.projectfusion.keycards.items.impl;
 
+import io.github.hyscript7.projectfusion.keycards.ProjectFusionKeycards;
 import io.github.hyscript7.projectfusion.keycards.items.CustomItem;
 import io.github.hyscript7.projectfusion.keycards.readers.Reader;
 import io.github.hyscript7.projectfusion.keycards.readers.ReaderService;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ReaderWrenchItem extends CustomItem {
+
     private final ReaderService readerService;
 
     public ReaderWrenchItem(ReaderService readerService) {
@@ -44,19 +46,20 @@ public class ReaderWrenchItem extends CustomItem {
                 Component.text(""),
                 Component.text("-- Left Click --"),
                 Component.text("Looking at air: Change level (shift to reverse) by 1"),
-                Component.text("Looking at block: Change pulse duration (shift to reverse) by 1/2 of a second"),
+                Component.text("Looking at block: Change pulse duration (shift to reverse) by ½s"),
                 Component.text("-- Right Click --"),
-                Component.text("b. Looking at air"),
-                Component.text("Toggle Exact Level Match setting"),
-                Component.text("a. Looking at a block"),
-                Component.text("Without Sneaking: Configure or update reader configuration"),
-                Component.text("With Sneak: Copy existing reader configuration")
+                Component.text("Looking at air (no sneak): Toggle Exact Level Match"),
+                Component.text("Looking at air (sneak): Reset all settings"),
+                Component.text("Looking at block (no sneak): Create or update reader"),
+                Component.text("Looking at block (sneak): Copy reader's configuration")
         ));
         itemStack.setItemMeta(meta);
     }
 
     @Override
-    public void onLeftClick(@NotNull ItemStack itemStack, @NotNull Player player, @Nullable Block clickedBlock, @Nullable Location clickedLocation, boolean isOffHanded) {
+    public void onLeftClick(@NotNull ItemStack itemStack, @NotNull Player player,
+                            @Nullable Block clickedBlock, @Nullable Location clickedLocation,
+                            boolean isOffHanded) {
         if (clickedBlock == null || clickedBlock.getType() == Material.AIR) {
             changeWrenchLevelSetting(player, itemStack, !player.isSneaking());
         } else {
@@ -64,34 +67,10 @@ public class ReaderWrenchItem extends CustomItem {
         }
     }
 
-    private void changeWrenchLevelSetting(Player player, ItemStack itemStack, boolean increment) {
-        WrenchSettings wrenchSettings = WrenchSettings.readFromPersistentDataContainer(itemStack);
-        if (increment) {
-            wrenchSettings.setLevel(Math.min(wrenchSettings.getLevel() + 1, 255));
-        } else {
-            wrenchSettings.setLevel(Math.max(0, wrenchSettings.getLevel() - 1));
-        }
-        player.sendActionBar(Component.text("Level: ").color(NamedTextColor.GRAY).append(Component.text(wrenchSettings.getLevel()).color(increment ? NamedTextColor.GREEN : NamedTextColor.RED)));
-        wrenchSettings.saveToPersistentDataContainer(itemStack);
-        updateItemLore(itemStack, wrenchSettings);
-    }
-
-    private void changeWrenchPulseDurationSetting(Player player, ItemStack itemStack, int step, boolean increment) {
-        WrenchSettings wrenchSettings = WrenchSettings.readFromPersistentDataContainer(itemStack);
-        if (increment) {
-            // Max = 15 seconds
-            wrenchSettings.setPulseDurationInTicks(Math.min(wrenchSettings.getPulseDurationInTicks() + step, 20 * 15));
-        } else {
-            // Min = 1/2 of a second
-            wrenchSettings.setPulseDurationInTicks(Math.max(10, wrenchSettings.getPulseDurationInTicks() - step));
-        }
-        player.sendActionBar(Component.text("Pulse Duration: ").color(NamedTextColor.GRAY).append(Component.text(wrenchSettings.getPulseDurationInTicks() / 20.0d).color(increment ? NamedTextColor.GREEN : NamedTextColor.RED)));
-        wrenchSettings.saveToPersistentDataContainer(itemStack);
-        updateItemLore(itemStack, wrenchSettings);
-    }
-
     @Override
-    public void onRightClick(@NotNull ItemStack itemStack, @NotNull Player player, @Nullable Block clickedBlock, @Nullable Location clickedLocation, boolean isOffHanded) {
+    public void onRightClick(@NotNull ItemStack itemStack, @NotNull Player player,
+                             @Nullable Block clickedBlock, @Nullable Location clickedLocation,
+                             boolean isOffHanded) {
         if (clickedBlock == null || clickedBlock.getType() == Material.AIR) {
             if (player.isSneaking()) {
                 resetSettings(player, itemStack);
@@ -107,34 +86,66 @@ public class ReaderWrenchItem extends CustomItem {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Actions
+    // -------------------------------------------------------------------------
+
+    private void changeWrenchLevelSetting(Player player, ItemStack itemStack, boolean increment) {
+        WrenchSettings s = WrenchSettings.readFromPersistentDataContainer(itemStack);
+        s.setLevel(increment
+                ? Math.min(s.getLevel() + 1, 255)
+                : Math.max(0, s.getLevel() - 1));
+        player.sendActionBar(Component.text("Level: ").color(NamedTextColor.GRAY)
+                .append(Component.text(s.getLevel())
+                        .color(increment ? NamedTextColor.GREEN : NamedTextColor.RED)));
+        s.saveToPersistentDataContainer(itemStack);
+        updateItemLore(itemStack, s);
+    }
+
+    private void changeWrenchPulseDurationSetting(Player player, ItemStack itemStack, int step, boolean increment) {
+        WrenchSettings s = WrenchSettings.readFromPersistentDataContainer(itemStack);
+        s.setPulseDurationInTicks(increment
+                ? Math.min(s.getPulseDurationInTicks() + step, 20 * 15) // max 15 s
+                : Math.max(10, s.getPulseDurationInTicks() - step));      // min 0.5 s
+        player.sendActionBar(Component.text("Pulse Duration: ").color(NamedTextColor.GRAY)
+                .append(Component.text(s.getPulseDurationInTicks() / 20.0d + "s")
+                        .color(increment ? NamedTextColor.GREEN : NamedTextColor.RED)));
+        s.saveToPersistentDataContainer(itemStack);
+        updateItemLore(itemStack, s);
+    }
+
     private void toggleWantsExactMatch(Player player, ItemStack itemStack) {
-        WrenchSettings wrenchSettings = WrenchSettings.readFromPersistentDataContainer(itemStack);
-        wrenchSettings.setWantsExactMatch(!wrenchSettings.isWantsExactMatch());
-        wrenchSettings.saveToPersistentDataContainer(itemStack);
-        updateItemLore(itemStack, wrenchSettings);
-        player.sendActionBar(Component.text("Wants Exact Match: ").color(NamedTextColor.GRAY).append(Component.text(wrenchSettings.isWantsExactMatch()).color(wrenchSettings.isWantsExactMatch() ? NamedTextColor.GREEN : NamedTextColor.RED)));
+        WrenchSettings s = WrenchSettings.readFromPersistentDataContainer(itemStack);
+        s.setWantsExactMatch(!s.isWantsExactMatch());
+        s.saveToPersistentDataContainer(itemStack);
+        updateItemLore(itemStack, s);
+        player.sendActionBar(Component.text("Wants Exact Match: ").color(NamedTextColor.GRAY)
+                .append(Component.text(s.isWantsExactMatch())
+                        .color(s.isWantsExactMatch() ? NamedTextColor.GREEN : NamedTextColor.RED)));
     }
 
     private void resetSettings(Player player, ItemStack itemStack) {
-        WrenchSettings wrenchSettings = WrenchSettings.defaultSettings();
-        wrenchSettings.saveToPersistentDataContainer(itemStack);
-        updateItemLore(itemStack, wrenchSettings);
+        WrenchSettings s = WrenchSettings.defaultSettings();
+        s.saveToPersistentDataContainer(itemStack);
+        updateItemLore(itemStack, s);
         player.sendActionBar(Component.text("Settings reset").color(NamedTextColor.AQUA));
     }
 
     private void createOrUpdateReader(Player player, ItemStack itemStack, Block block, boolean offhanded) {
-        WrenchSettings wrenchSettings = WrenchSettings.readFromPersistentDataContainer(itemStack);
+        WrenchSettings s = WrenchSettings.readFromPersistentDataContainer(itemStack);
         Reader existingReader = readerService.getReader(block.getLocation());
         if (existingReader != null) {
             if (!offhanded) {
-                player.sendActionBar(Component.text("Offhand wrench and click again to overwrite configuration.").color(NamedTextColor.DARK_RED));
+                player.sendActionBar(
+                        Component.text("Offhand wrench and click again to overwrite configuration.")
+                                .color(NamedTextColor.DARK_RED));
                 return;
             }
-            wrenchSettings.updateReader(existingReader);
+            s.updateReader(existingReader);
             readerService.saveReader(existingReader);
             player.sendActionBar(Component.text("Reader configuration updated").color(NamedTextColor.YELLOW));
         } else {
-            readerService.saveReader(wrenchSettings.createReader(block.getLocation()));
+            readerService.saveReader(s.createReader(block.getLocation()));
             player.sendActionBar(Component.text("Reader created").color(NamedTextColor.GREEN));
         }
     }
@@ -145,18 +156,27 @@ public class ReaderWrenchItem extends CustomItem {
             player.sendActionBar(Component.text("You must be looking at a reader!").color(NamedTextColor.RED));
             return;
         }
-        WrenchSettings wrenchSettings = WrenchSettings.readFromExistingReader(reader);
-        wrenchSettings.saveToPersistentDataContainer(itemStack);
-        updateItemLore(itemStack, wrenchSettings);
+        WrenchSettings s = WrenchSettings.readFromExistingReader(reader);
+        s.saveToPersistentDataContainer(itemStack);
+        updateItemLore(itemStack, s);
         player.sendActionBar(Component.text("Reader configuration copied").color(NamedTextColor.AQUA));
     }
+
+    // -------------------------------------------------------------------------
+    // Wrench state stored in the item's PDC
+    // -------------------------------------------------------------------------
 
     @Getter
     @Setter
     private static class WrenchSettings {
-        public static final NamespacedKey WRENCH_LEVEL_SETTINGS = new NamespacedKey("keycards", "wrench_level");
-        public static final NamespacedKey WRENCH_EXACT_SETTINGS = new NamespacedKey("keycards", "wrench_exact");
-        public static final NamespacedKey WRENCH_DURATION_SETTINGS = new NamespacedKey("keycards", "wrench_duration");
+
+        // Namespace aligned with the rest of the plugin
+        public static final NamespacedKey WRENCH_LEVEL_SETTINGS =
+                new NamespacedKey(ProjectFusionKeycards.namespace, "wrench_level");
+        public static final NamespacedKey WRENCH_EXACT_SETTINGS =
+                new NamespacedKey(ProjectFusionKeycards.namespace, "wrench_exact");
+        public static final NamespacedKey WRENCH_DURATION_SETTINGS =
+                new NamespacedKey(ProjectFusionKeycards.namespace, "wrench_duration");
 
         private int level;
         private int pulseDurationInTicks;
@@ -181,16 +201,17 @@ public class ReaderWrenchItem extends CustomItem {
         }
 
         public static WrenchSettings readFromPersistentDataContainer(ItemStack itemStack) {
-            int level = itemStack.getPersistentDataContainer().getOrDefault(WRENCH_LEVEL_SETTINGS, PersistentDataType.INTEGER, 1);
-            int duration = itemStack.getPersistentDataContainer().getOrDefault(WRENCH_DURATION_SETTINGS, PersistentDataType.INTEGER, 60);
-            boolean exact = itemStack.getPersistentDataContainer().getOrDefault(WRENCH_EXACT_SETTINGS, PersistentDataType.BOOLEAN, false);
+            var pdc = itemStack.getPersistentDataContainer();
+            int level    = pdc.getOrDefault(WRENCH_LEVEL_SETTINGS,    PersistentDataType.INTEGER, 1);
+            int duration = pdc.getOrDefault(WRENCH_DURATION_SETTINGS, PersistentDataType.INTEGER, 60);
+            boolean exact = pdc.getOrDefault(WRENCH_EXACT_SETTINGS,   PersistentDataType.BOOLEAN, false);
             return new WrenchSettings(level, duration, exact);
         }
 
         public void saveToPersistentDataContainer(ItemStack itemStack) {
             itemStack.editPersistentDataContainer(pdc -> {
-                pdc.set(WRENCH_LEVEL_SETTINGS, PersistentDataType.INTEGER, level);
-                pdc.set(WRENCH_EXACT_SETTINGS, PersistentDataType.BOOLEAN, wantsExactMatch);
+                pdc.set(WRENCH_LEVEL_SETTINGS,    PersistentDataType.INTEGER, level);
+                pdc.set(WRENCH_EXACT_SETTINGS,    PersistentDataType.BOOLEAN, wantsExactMatch);
                 pdc.set(WRENCH_DURATION_SETTINGS, PersistentDataType.INTEGER, pulseDurationInTicks);
             });
         }

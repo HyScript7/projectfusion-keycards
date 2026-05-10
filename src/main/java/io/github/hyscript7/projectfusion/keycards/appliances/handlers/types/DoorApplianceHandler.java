@@ -21,7 +21,7 @@ public class DoorApplianceHandler implements ApplianceHandler {
         }
         door.setOpen(true);
         door.setPowered(true);
-        block.setBlockData(door);
+        block.setBlockData(door, false);
     }
 
     @Override
@@ -34,6 +34,6 @@ public class DoorApplianceHandler implements ApplianceHandler {
         }
         door.setOpen(false);
         door.setPowered(false);
-        block.setBlockData(door);
+        block.setBlockData(door, true);
     }
 }

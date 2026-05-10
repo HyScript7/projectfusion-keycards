@@ -13,6 +13,7 @@ import java.util.*;
 @Getter
 @SerializableAs("Appliance")
 public class Appliance implements ConfigurationSerializable {
+
     private final Location location;
     private final Set<Location> linkedReaders;
     private volatile Set<Reader> activeReaders;
@@ -29,6 +30,10 @@ public class Appliance implements ConfigurationSerializable {
         this.activeReaders = new HashSet<>();
     }
 
+    // -------------------------------------------------------------------------
+    // Active-reader tracking (used by ReaderManager for multi-reader appliances)
+    // -------------------------------------------------------------------------
+
     public synchronized void incrementActiveReaders(Reader reader) {
         activeReaders.add(reader);
     }
@@ -41,23 +46,53 @@ public class Appliance implements ConfigurationSerializable {
         return activeReaders.isEmpty();
     }
 
+    // -------------------------------------------------------------------------
+    // Link management
+    // -------------------------------------------------------------------------
+
     public void linkReader(Reader reader) {
-        this.linkedReaders.add(reader.getLocation());
+        linkedReaders.add(reader.getLocation());
     }
 
     public void unlinkReader(Reader reader) {
-        this.linkedReaders.remove(reader.getLocation());
+        linkedReaders.remove(reader.getLocation());
     }
 
     public Block getBlock() {
         return location.getWorld().getBlockAt(location);
     }
 
+    // -------------------------------------------------------------------------
+    // Identity — two Appliances at the same block position are the same
+    // -------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Appliance other)) return false;
+        return location.getBlockX() == other.location.getBlockX()
+                && location.getBlockY() == other.location.getBlockY()
+                && location.getBlockZ() == other.location.getBlockZ()
+                && Objects.equals(location.getWorld(), other.location.getWorld());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                location.getWorld() != null ? location.getWorld().getUID() : null,
+                location.getBlockX(),
+                location.getBlockY(),
+                location.getBlockZ()
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // YAML serialisation (kept for potential migration / YAML backend use)
+    // -------------------------------------------------------------------------
+
     @Override
     public @NonNull Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
-        // We don't strictly need to save 'location' here if it's the key,
-        // but keeping it makes the object self-contained.
         map.put("location", location);
         map.put("linkedReaders", new ArrayList<>(linkedReaders));
         return map;
@@ -65,6 +100,7 @@ public class Appliance implements ConfigurationSerializable {
 
     public static Appliance deserialize(Map<String, Object> map) {
         Location loc = (Location) map.get("location");
+        @SuppressWarnings("unchecked")
         List<Location> readers = (List<Location>) map.get("linkedReaders");
         return new Appliance(loc, new HashSet<>(readers));
     }

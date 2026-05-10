@@ -6,13 +6,28 @@ import io.github.hyscript7.projectfusion.keycards.readers.Reader;
 import io.github.hyscript7.projectfusion.keycards.readers.ReaderService;
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * Maintains the in-memory reader → appliance lookup that drives keycard
+ * activation.
+ * <p>
+ * <b>Bug fix:</b> the previous implementation used a {@code List<Appliance>}
+ * as the map value, which allowed the same appliance to be appended multiple
+ * times when a player clicked it with the Linking Wrench more than once.
+ * This caused {@code activate()} / {@code deactivate()} to fire multiple times
+ * per swipe and corrupted the active-reader counter.
+ * <p>
+ * The fix is to use a {@code Set<Appliance>}, which requires (and relies on)
+ * {@link Appliance#equals}/{@link Appliance#hashCode} being defined by
+ * block-position. A duplicate {@code link()} call is now silently idempotent
+ * at both the {@link Appliance#linkedReaders} level (always was a
+ * {@code HashSet<Location>}) and the lookup level (now a {@code Set}).
+ */
 public class LinkManager {
-    private final Map<Reader, List<Appliance>> links;
+
+    /** reader → set of appliances it controls */
+    private final Map<Reader, Set<Appliance>> links;
 
     private final ReaderService readerService;
     private final ApplianceService applianceService;
@@ -24,15 +39,25 @@ public class LinkManager {
         loadLookup();
     }
 
+    // -------------------------------------------------------------------------
+    // Startup
+    // -------------------------------------------------------------------------
+
     private void loadLookup() {
         links.clear();
         for (Appliance appliance : applianceService.getAllAppliances()) {
             for (Location readerLocation : appliance.getLinkedReaders()) {
                 Reader reader = readerService.getReader(readerLocation);
-                getAppliances(reader).add(appliance);
+                if (reader != null) {
+                    getAppliancesFor(reader).add(appliance);
+                }
             }
         }
     }
+
+    // -------------------------------------------------------------------------
+    // Lifecycle purge (called on block-break)
+    // -------------------------------------------------------------------------
 
     public void purgeReader(Reader reader) {
         links.remove(reader);
@@ -40,10 +65,22 @@ public class LinkManager {
     }
 
     public void purgeAppliance(Appliance appliance) {
-        for (Reader reader : getReaders(appliance)) {
+        for (Reader reader : getReadersFor(appliance)) {
             unlink(reader, appliance, false);
         }
         applianceService.deleteAppliance(appliance);
+    }
+
+    // -------------------------------------------------------------------------
+    // Link / unlink
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns {@code true} if this reader–appliance pair is already linked
+     * (so callers can give appropriate feedback without actually linking again).
+     */
+    public boolean isLinked(Reader reader, Appliance appliance) {
+        return appliance.getLinkedReaders().contains(reader.getLocation());
     }
 
     public void link(Reader reader, Appliance appliance) {
@@ -51,8 +88,8 @@ public class LinkManager {
     }
 
     private void link(Reader reader, Appliance appliance, boolean save) {
-        appliance.linkReader(reader);
-        getAppliances(reader).add(appliance);
+        appliance.linkReader(reader);              // idempotent – HashSet<Location>
+        getAppliancesFor(reader).add(appliance);   // idempotent – Set<Appliance>
         if (save) {
             applianceService.saveAppliance(appliance);
         }
@@ -64,17 +101,36 @@ public class LinkManager {
 
     private void unlink(Reader reader, Appliance appliance, boolean save) {
         appliance.unlinkReader(reader);
-        getAppliances(reader).remove(appliance);
+        getAppliancesFor(reader).remove(appliance);
         if (save) {
             applianceService.saveAppliance(appliance);
         }
     }
 
-    public List<Appliance> getAppliances(Reader reader) {
-        return links.computeIfAbsent(reader, r -> new ArrayList<>());
+    // -------------------------------------------------------------------------
+    // Queries
+    // -------------------------------------------------------------------------
+
+    /** Returns the (live) set of appliances controlled by this reader. */
+    public Set<Appliance> getAppliancesFor(Reader reader) {
+        return links.computeIfAbsent(reader, r -> new LinkedHashSet<>());
     }
 
-    public List<Reader> getReaders(Appliance appliance) {
-        return appliance.getLinkedReaders().stream().map(readerService::getReader).toList();
+    /** Returns all readers that are currently linked to this appliance. */
+    public List<Reader> getReadersFor(Appliance appliance) {
+        return appliance.getLinkedReaders().stream()
+                .map(readerService::getReader)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    // -------------------------------------------------------------------------
+    // Legacy accessor — kept so ReaderManager compiles without changes
+    // -------------------------------------------------------------------------
+
+    /** @deprecated Use {@link #getAppliancesFor(Reader)} */
+    @Deprecated(forRemoval = true)
+    public Collection<Appliance> getAppliances(Reader reader) {
+        return getAppliancesFor(reader);
     }
 }

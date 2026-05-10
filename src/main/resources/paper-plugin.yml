@@ -1,4 +1,59 @@
 name: ProjectFusion-Keycards
-version: '1.0-SNAPSHOT'
+version: '2.0-SNAPSHOT'
 main: io.github.hyscript7.projectfusion.keycards.ProjectFusionKeycards
 api-version: '1.21.11'
+
+# ---------------------------------------------------------------------------
+# Permission nodes
+#
+# Keycard-use permissions follow the pattern:
+#   projectfusion.keycards.use.<level>   (level 0–255)
+#
+# Because listing 256 individual nodes here would be unreasonable, only a
+# handful of representative levels are declared below. Permission managers
+# such as LuckPerms can grant the wildcard node
+#   projectfusion.keycards.use.*
+# to give a group access to all levels at once.
+# ---------------------------------------------------------------------------
+
+permissions:
+
+  # ── Keycard use ────────────────────────────────────────────────────────────
+
+  projectfusion.keycards.use.*:
+    description: Allows using keycards of any access level.
+    default: op
+
+  projectfusion.keycards.use.0:
+    description: Allows using level-0 keycards (lowest clearance).
+    default: true
+
+  projectfusion.keycards.use.1:
+    description: Allows using level-1 keycards.
+    default: true
+
+  projectfusion.keycards.use.2:
+    description: Allows using level-2 keycards.
+    default: op
+
+  projectfusion.keycards.use.3:
+    description: Allows using level-3 keycards.
+    default: op
+
+  projectfusion.keycards.use.4:
+    description: Allows using level-4 keycards.
+    default: op
+
+  # Higher levels (5–255) are not declared here but are fully supported.
+  # Grant them via your permission manager using:
+  #   projectfusion.keycards.use.<level>
+
+  # ── Commands ───────────────────────────────────────────────────────────────
+
+  projectfusion.keycards.command.get.keycard:
+    description: Allows running /keycards get keycard to receive a keycard item.
+    default: op
+
+  projectfusion.keycards.command.get.wrench:
+    description: Allows running /keycards get wrench to receive a wrench item.
+    default: op
